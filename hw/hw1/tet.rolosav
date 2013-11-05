@@ -1,0 +1,11 @@
+*START*
+cat
+cat 1
+cat 2
+dog
+dog 1
+dog 2
+dogcat
+dogcat 1
+dogcat 2
+*END*

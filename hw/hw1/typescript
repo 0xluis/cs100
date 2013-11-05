@@ -1,0 +1,35 @@
+Script started on Mon 07 Oct 2013 12:08:47 AM PDT
+]0;rei@reiQ: ~rei@reiQ:~$ mkdir cs100
+]0;rei@reiQ: ~rei@reiQ:~$ mkdircs[K[K cs100/hw
+]0;rei@reiQ: ~rei@reiQ:~$ mkdir cs100/hw/hw1
+]0;rei@reiQ: ~rei@reiQ:~$ exit
+
+Script done on Mon 07 Oct 2013 12:09:14 AM PDT
+Script started on Wed 09 Oct 2013 11:22:24 PM PDT
+]0;rei@reiQ: ~/cs100/hw/hw1rei@reiQ:~/cs100/hw/hw1$ g++ -o stack stack.cc
+]0;rei@reiQ: ~/cs100/hw/hw1rei@reiQ:~/cs100/hw/hw1$ ./stack.cc
+bash: ./stack.cc: Permission denied
+]0;rei@reiQ: ~/cs100/hw/hw1rei@reiQ:~/cs100/hw/hw1$ ./stack 
+Press enter to push into stack, ^D to end
+123456
+123123
+1231
+1321321321654321
+]0;rei@reiQ: ~/cs100/hw/hw1rei@reiQ:~/cs100/hw/hw1$ clear
+[H[2J]0;rei@reiQ: ~/cs100/hw/hw1rei@reiQ:~/cs100/hw/hw1$ g++ -o rolodex rolodex.cc
+]0;rei@reiQ: ~/cs100/hw/hw1rei@reiQ:~/cs100/hw/hw1$ ./rolodex
+
+   Rolodex Program (Card Contacts Spinny Thingy)
+==================================================
+||	i - inseart a new address		||
+||	f - find an address			||
+||	d - delete an address			||
+||	p - print all cards in rolodex		||
+||	l - load addresss from a .rolosav	||
+||	s - save the address to a .rolosav	||
+||	q - quit the program			||
+Type in letter command: q
+
+]0;rei@reiQ: ~/cs100/hw/hw1rei@reiQ:~/cs100/hw/hw1$ exit
+
+Script done on Wed 09 Oct 2013 11:23:29 PM PDT

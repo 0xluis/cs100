@@ -1,0 +1,27 @@
+Editor-Vim
+
+1) w to move to the front of the word intelligent.
+   D to delete the word intelligent.
+   a to go to insert mode and type "an idiot." esx to exit insert mode
+2) ma to mark the position to a.
+   ^ to move to the beginning of the line
+   i to go to insert mode and type "IF"
+3) `a to go back to mark
+   e to go to the end of the word
+   a to go to insert mode and type " savant" esc to exit insert mode
+4) ^ to go back to the beginning of the line ("IF")
+   e to move to 'F'
+   rf to replace 'F' with 'f'
+5) O to insert a new line before this line
+   esc to exit insert mode
+   :wq! to write and exit
+6) qq to start recording the macro
+   a to go to insert mode and type the for loop
+   move cursor to the first semicolon
+   Ctrl + O to allow you to execute a command in insert mode
+   q to stop the recording of the macro
+   :nnoremap \fo @q
+7) qw to start macro
+   type command :%s/\t/    /g
+   q to end macro
+   :nnoremap \!S @w
