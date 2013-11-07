@@ -1,0 +1,4 @@
+s = s+t;
+s+=t;
+
+s+t is more efficient in my coding because I create a copy of *this+s then cyle through it to accurately set *s to a correct List. If i dont do this i would run into an error doing c+=c because i would be able to edit this but that would indirectly edit the lhs causing me an infinite loop.

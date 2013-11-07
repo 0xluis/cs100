@@ -1,0 +1,6 @@
+i. grep [0-9] *.cpp
+ii. grep "cout" *.h *.cpp
+iii. sed -i '/^$/d' filename
+iv. find ~/ .Trash/ -prune -o -name '*.o' -exec mv {} .Trash/ \; -o -name '*.out' -exec mv {} .Trash/ \;
+v. find /bin -ls
+vi. find ~/* -ls | awk '$7 > 20 {print $7}'
