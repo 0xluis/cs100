@@ -16,7 +16,6 @@ class Hero
 	    //constructor
 	}
         virtual void specialAttack() = 0;
-        virtual ~Hero(){};
 };
 
 #endif

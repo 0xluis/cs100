@@ -22,7 +22,7 @@ my_shell.o: my_shell.cc
 	$(CFLAGS) my_shell.cc
 
 clean:
-	rm -rf *.o $(EXEC) shell.pdf
+	rm -rf *.o $(EXEC)
 
 strip:
 	strip -s my_shell

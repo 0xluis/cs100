@@ -1,0 +1,104 @@
+Script started on Tue 12 Nov 2013 01:31:52 PM PST
+]0;rei:~/cs100/cs100/hw/hw513:31:52 [~/cs100/cs100/hw/hw5] > make
+g++ -g -c my_shell.cc
+g++ -g -c heroes.cc
+g++ -g -c main.cc
+g++ -g my_shell.o -o my_shell
+g++ -g heroes.o main.o -o hero
+]0;rei:~/cs100/cs100/hw/hw513:31:56 [~/cs100/cs100/hw/hw5] > ./hero 
+This intHero derived from Hero converts all of its intelligence to attack damage resulting in 200 pure damage.
+
+This strengthHero derived from Hero reduces his intelligence in order to gain more strength.
+The strength of this hero is now 30with 0 intelligence.
+
+This intHero derived from Hero converts all of its intelligence to attack damage resulting in 200 pure damage.
+
+This agilityHero derived from Hero splits his agility by 2 In order to gain more intel and strength. This is actually a horrible special attack.
+The stats of this hero is now:
+agility: 5
+strength: 16
+intel: 12
+
+This intHero derived from Hero converts all of its intelligence to attack damage resulting in 200 pure damage.
+
+This strengthHero derived from Hero reduces his intelligence in order to gain more strength.
+The strength of this hero is now 30with 0 intelligence.
+
+This intHero derived from Hero converts all of its intelligence to attack damage resulting in 200 pure damage.
+
+This strengthHero derived from Hero reduces his intelligence in order to gain more strength.
+The strength of this hero is now 30with 0 intelligence.
+
+This intHero derived from Hero converts all of its intelligence to attack damage resulting in 200 pure damage.
+
+This agilityHero derived from Hero splits his agility by 2 In order to gain more intel and strength. This is actually a horrible special attack.
+The stats of this hero is now:
+agility: 5
+strength: 16
+intel: 12
+
+]0;rei:~/cs100/cs100/hw/hw513:32:01 [~/cs100/cs100/hw/hw5] > ./my_shell 
+~badshell% ls | tr a-z A-Z
+If this worked it would have piped here...~badshell% echo ...
+~badshell% ls
+hero	   heroes.o  main.cc  makefile	my_shell.cc  typescript
+heroes.cc  hero.h    main.o   my_shell	my_shell.o
+~badshell% ^C
+]0;rei:~/cs100/cs100/hw/hw513:32:29 [~/cs100/cs100/hw/hw5] > exit
+
+Script done on Tue 12 Nov 2013 01:32:30 PM PST
+Script started on Tue 12 Nov 2013 01:32:41 PM PST
+]0;rei:~/cs100/cs100/hw/hw513:32:41 [~/cs100/cs100/hw/hw5] > make clean
+rm -rf *.o my_shell hero shell.pdf
+]0;rei:~/cs100/cs100/hw/hw513:32:44 [~/cs100/cs100/hw/hw5] > make print
+cat < my_shell.cc | enscript -p shell.ps
+[ 3 pages * 1 copy ] left in shell.ps
+ps2pdf shell.ps
+rm shell.ps
+]0;rei:~/cs100/cs100/hw/hw513:32:51 [~/cs100/cs100/hw/hw5] > strip
+Usage: strip <option(s)> in-file(s)
+ Removes symbols and sections from files
+ The options are:
+  -I --input-target=<bfdname>      Assume input file is in format <bfdname>
+  -O --output-target=<bfdname>     Create an output file in format <bfdname>
+  -F --target=<bfdname>            Set both input and output format to <bfdname>
+  -p --preserve-dates              Copy modified/access timestamps to the output
+  -D --enable-deterministic-archives
+                                   Produce deterministic output when stripping archives
+  -U --disable-deterministic-archives
+                                   Disable -D behavior (default)
+  -R --remove-section=<name>       Remove section <name> from the output
+  -s --strip-all                   Remove all symbol and relocation information
+  -g -S -d --strip-debug           Remove all debugging symbols & sections
+     --strip-dwo                   Remove all DWO sections
+     --strip-unneeded              Remove all symbols not needed by relocations
+     --only-keep-debug             Strip everything but the debug information
+  -N --strip-symbol=<name>         Do not copy symbol <name>
+  -K --keep-symbol=<name>          Do not strip symbol <name>
+     --keep-file-symbols           Do not strip file symbol(s)
+  -w --wildcard                    Permit wildcard in symbol comparison
+  -x --discard-all                 Remove all non-global symbols
+  -X --discard-locals              Remove any compiler-generated symbols
+  -v --verbose                     List all object files modified
+  -V --version                     Display this program's version number
+  -h --help                        Display this output
+     --info                        List object formats & architectures supported
+  -o <file>                        Place stripped output into <file>
+strip: supported targets: elf64-x86-64 elf32-i386 elf32-x86-64 a.out-i386-linux pei-i386 pei-x86-64 elf64-l1om elf64-k1om elf64-little elf64-big elf32-little elf32-big plugin srec symbolsrec verilog tekhex binary ihex
+]0;rei:~/cs100/cs100/hw/hw513:33:08 [~/cs100/cs100/hw/hw5] > make strip
+strip -s my_shell
+strip: 'my_shell': No such file
+make: *** [strip] Error 1
+]0;rei:~/cs100/cs100/hw/hw513:33:11 [~/cs100/cs100/hw/hw5] > ls
+heroes.cc  hero.h  main.cc  makefile  my_shell.cc  shell.pdf  typescript
+]0;rei:~/cs100/cs100/hw/hw513:33:15 [~/cs100/cs100/hw/hw5] > make
+g++ -g -c my_shell.cc
+g++ -g -c heroes.cc
+g++ -g -c main.cc
+g++ -g my_shell.o -o my_shell
+g++ -g heroes.o main.o -o hero
+]0;rei:~/cs100/cs100/hw/hw513:33:18 [~/cs100/cs100/hw/hw5] > make scr[K[K[Kstrip
+strip -s my_shell
+]0;rei:~/cs100/cs100/hw/hw513:33:22 [~/cs100/cs100/hw/hw5] > exit
+
+Script done on Tue 12 Nov 2013 01:33:26 PM PST

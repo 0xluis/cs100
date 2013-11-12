@@ -67,17 +67,24 @@ int execute (vector<string> vectArgv)
     int i;
     string token;
     vector<string> commands;
-    //int pipefd[2];
-    //pipe(pipefd);
+    int pipefd[2];
     switch (pid)
     {
     	case -1:
 	    cout << "forked up!\n";
 	    return -1;
 	case 0:
+//	{
+	  //need to conver the vector of strings to array of string pointers
+	    //string token;
+	   // const char **argv = new const char* [vectArgv.size()];
+	   // const char *program = vectArgv[0].c_str();
+	    //argv[0] = program;
+	   // int i;
+//	    vector<string> commands;
 	    for (i=0; i<vectArgv.size() && vectArgv[i]!="|"; i++)
 	    {
-		if(vectArgv[i] != ">" && vectArgv[i] != "<")
+		if(vectArgv[i] != ">" && vectArgv[i] != "<") //&& vectArgv[i] != "|")
 		{
       	    	    argv[i] = vectArgv[i].c_str();
 		}
@@ -105,59 +112,42 @@ int execute (vector<string> vectArgv)
 			    dup2(input,0);
 			    close(input);
 			}
+		        /*if(token == "|")
+			{
+			    argv[i] = NULL;
+			    pipe(pipefd);
+		            int pid2 = fork();
+			    if(pid2<0) exit(1);
+			    if(pid2>0)
+			    {
+				close(pipefd[1]);
+			    }
+			    else
+			    {
+			  	close(pipefd[0]);
+			    }
+			}*/
 		    }
 		    argv[i] = NULL;
 		}	
 	    }
-
 	    argv[i++] = NULL;
-
-
-	   
-            if(vectArgv[i-1] == "|")
+            if(argv[i-1] == "|")
 	    {
-		cerr << "If this worked it would have piped here...";
-	        int fds[2];
-                pipe(fds);
-	        int pid2;
-		if(fork() == 0)
-		{
-		dup2(fds[0],0);
-		close(fds[1]);
-		vector <string> newArgv;
-		   //onst char **argv = new const char* [vectArgv.size()];
-		   //cout << endl << endl;
-		   for(i++;i<vectArgv.size(); i++)
-		   {
-			//cout << vectArgv[i] << endl;
-			newArgv.push_back(vectArgv[i]);
-		   }
-		   execute(newArgv);
-
-		}else if((pid2 = fork()) == 0)
-		{
-		  dup2(fds[1], 1);
-		  close(fds[0]);
-		  if(execvp(program, (char**)argv)==-1)
-			perror("execvp failed");
-		}
-		else
-		waitpid(pid2, NULL,0);
-		exit(1);
+		cerr << "PIPESHIT";
 	    }
 	
-	    else{
-    
+	    
+	  
+	    if(execvp (program, (char **)argv) == -1)
+		perror("execvp failed");
 
-	     execvp(program, (char **)argv);
-//		exit(1);
-            }
-		
-	    	    
-
+	    
+	    exit (1);
+//	}
 	default:
 	    int status;
-	    return waitpid(-1, NULL, 0);
+	    return waitpid(-1, &status, 0);
     }
 }
 
@@ -167,15 +157,15 @@ int main()
     vector <string> argv;
     while(true)
     {
-	cout << "~badshell% ";
+	cout << "% ";
 	getline(cin, input);
 	argv = vectorize(input);
 	
-	/*for(int i=0; i<argv.size(); i++)
+	for(int i=0; i<argv.size(); i++)
 	{
 	    cout << argv[i] << " " << i << endl;
 	}
-	*/
+	
 	if (execute(argv) < 0)
 	    perror(argv[0].c_str());
 
