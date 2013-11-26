@@ -34,7 +34,7 @@ using namespace std;
 string get_path(string);
 vector<string> strToVect(string);
 int execute(string);
-int pipeExecute(list<string>);
+void pipeExecute(list<string>);
 list<string> splitPipes(string);
 void parsePipes(list<string>);
 string findFilePath(vector<string>, string);
@@ -54,7 +54,7 @@ int main()
     {
 	perror("Signal was not successful");
     }
-    while(cin.good())
+    while(true)
     {
 	cout << "% ";
 	getline(cin, input);
@@ -142,17 +142,60 @@ int execute(string input)
 	    argv[i++] = NULL;
 	    //execute
 	    if(execv(program, (char**)argv) == -1)
+	    {
 	    	perror("execv failed");
-	    exit(1);
+	        exit(1);
+	    }
+	    return 0;
 
     	default:
 	     return waitpid(pid, &status, 0);
     }
 }
 
-int pipeExecute(list<string> listCommands)
+void pipeExecute(list<string> listCommands)
 {
+    cout << "WE ARE FKING HERE";
+    //the number of pipes we need
+    int numOfPipes = listCommands.size()-1;
+    //array of pipes these will be file descriptors
+    int pipefds[2*numOfPipes];
+
+    for(int i=0; i<numOfPipes; i++)
+        if(pipe(pipefds + i*2) < 0)
+        {
+	    perror("Pipe failed");
+	    exit(1);
+	}
+
+    for(int i=0, j=0; i<listCommands.size(); i++)
+    {
+	    if(i<numOfPipes)
+	    {
+	        if(dup2(pipefds[j+1], 1) < 0)
+	 	{
+		    perror("dup2 failed");
+		    exit(1);
+		}
+	    }
+	    if(j!= 0)
+	    {
+	    	if(dup2(pipefds[j-2], 0) < 0)
+		{
+		    perror("dup2 failed");
+		    exit(1);
+		}
+	    }
+
+	    execute(listCommands.front());
+	    listCommands.pop_front();
+
+	j+=2;
+    }
     
+    //close rest of pipes for last command
+    for(int i=0; i<2*numOfPipes; i++)
+	close(pipefds[i]);
 }
 
 //split the commands by | into list
@@ -169,26 +212,33 @@ list<string> splitPipes(string input)
 	}
 	else
 	{
+	   cout << strToPush << endl;
+
 	   listToReturn.push_back(strToPush);
 	   strToPush = ""; 
 	}
     }
-
+    cout << strToPush << endl;
     listToReturn.push_back(strToPush);
     return listToReturn;
 }
 
 void parsePipes(list<string> listCommands)
 {
+    cout << "DO WE EVEN GET HERE";
     //user typed in exit quit the shell
     if(listCommands.front() == "exit")
+    {
 	exit(0);
+	//cout << "ADSASD";
+    }
     //if no command ie user just hit enter dont exec anything
     if(listCommands.front() != "")
     {
 	//no pipes
         if(listCommands.size() == 1)
         {
+	    cout << "WAT";
 	    execute(listCommands.front());
         }
         //we have pipes
@@ -225,7 +275,7 @@ string findFilePath(vector<string> paths, string program)
 	    return programPath;
 	}
     }
-
+    //cout << programPath << endl;
     cout << "Program not found under $PATH!\n";
     return "";
 }

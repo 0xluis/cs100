@@ -29,6 +29,7 @@
 #include <cstring>
 
 using namespace std;
+
 int input(char ** argv)
 {
     int argc = 0;
@@ -62,11 +63,10 @@ int execCmd(char **args, int pipes)
 {
     // The number of commands to run
     const int commands = pipes + 1;
-    int i = 0;
-
     int pipefds[2*pipes];
 
-    for(i = 0; i < pipes; i++){
+    //open nessacry ammount of pipes
+    for(int i = 0; i < pipes; i++){
         if(pipe(pipefds + i*2) < 0) {
             perror("Couldn't Pipe");
             exit(EXIT_FAILURE);
@@ -103,7 +103,7 @@ int execCmd(char **args, int pipes)
 
 
 
-    for (i = 0; i < commands; ++i) {
+    for (int i = 0, j=0; i < commands; i++, j+=2) {
         // place is where in args the program should
         // start running when it gets to the execution
         // command
@@ -143,15 +143,13 @@ int execCmd(char **args, int pipes)
             perror("error");
             exit(EXIT_FAILURE);
         }
-
-        j+=2;
     }
 
-    for(i = 0; i < 2 * pipes; i++){
+    for(int i = 0; i < 2 * pipes; i++){
         close(pipefds[i]);
     }
 
-    for(i = 0; i < pipes + 1; i++){
+    for(int i = 0; i < pipes + 1; i++){
         wait(NULL);
     }
 } 

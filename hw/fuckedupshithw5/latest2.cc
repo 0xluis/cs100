@@ -34,7 +34,7 @@ using namespace std;
 string get_path(string);
 vector<string> strToVect(string);
 int execute(string);
-int pipeExecute(list<string>);
+void pipeExecute(list<string>);
 list<string> splitPipes(string);
 void parsePipes(list<string>);
 string findFilePath(vector<string>, string);
@@ -150,9 +150,50 @@ int execute(string input)
     }
 }
 
-int pipeExecute(list<string> listCommands)
+void pipeExecute(list<string> listCommands)
 {
-    
+    int commands =  listCommands.size();
+    int pipes = commands-1;
+    int pipefds[2*pipes];
+   
+    for(int i=0; i<pipes; i++)
+    {
+   	if(pipe(pipefds + i*2) <0)
+	{
+	    perror("pipe");
+	    exit(1);
+	}
+    }
+
+   for(int i=0, j=0; i<commands; i++, j+=2)
+   {
+	
+	execute(listCommands.front());
+	listCommands.pop_front();
+
+	if(i<pipes)
+	{
+	    if(dup2(pipefds[j+1], 1)<0)
+	    {
+	 	perror("dup2");
+		exit(1);
+	    }
+	}
+	if(j!=0)
+	{
+	    if(dup2(pipefds[j-2],0)<0)
+	    {
+		perror("dup2");
+		exit(1);
+	    }
+	}
+	for(int q=0; q<2*pipes; q++)
+	close(pipefds[q]);
+
+   }
+
+   for(int i=0; i<2*pipes; i++)
+	close(pipefds[i]);
 }
 
 //split the commands by | into list

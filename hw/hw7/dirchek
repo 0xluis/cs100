@@ -1,0 +1,13 @@
+#!/bin/bash
+for i in "$@"; do
+    if [ -d $i ]
+    then
+        echo $'\n'"$i:"
+        echo "Files:" $(find $i -maxdepth 1 -type f | wc -l)
+        echo "SubDirectories:" $(($(find $i -type d | wc -l)-1))
+	echo "0 Size Files: " $(find $i -maxdepth 1 -type f -size 0)
+        echo "Storage used: " $(du -ch $i | grep total) $'\n'
+    else
+	echo "$i is not a directory!"
+    fi
+done

@@ -58,15 +58,105 @@ int input(char ** argv)
   return argc;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int execute(string input)
+{
+    //convert the string into vector of strings
+    vector<string> words = strToVect(input);
+    //size of the vector is the size of the argvs
+    const char **argv = new const char* [words.size()];
+    //take the first argument ie the command name
+    //and call get path to search PATH for the file
+    const char *program = get_path(words[0]).c_str();
+    int i, status, pid = fork();
+    string token;
+    
+    switch(pid)
+    {
+        case -1:
+            cout << "Forked up!\n";
+            return -1;
+        case 0:
+            //loop through vector for each argument
+            for(i=0; i<words.size(); i++)
+            {
+                //if the string is not a io token add it to argv
+                if(words[i] != ">" && words[i] != "<")
+                    argv[i] = words[i].c_str();
+                else
+                {
+                    //if the string is a token for i/o set string token
+                    //to the < or >
+
+	            token = words[i];
+                    //if we are at the last index eg echo hello >
+                    //error a input or output file must be defined
+                    if(i+1 == words.size())
+                    {
+                        cerr << "Error expected file name!\n";
+                        exit(1);
+                    }else{
+                        //if it is not the last index open the next index for
+                        //input/output
+                        if(token == ">")
+                        {
+                            int output;
+                            output = open(words[i+1].c_str(), O_WRONLY
+                                         | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR);
+                            dup2(output, 1);
+                            close(output);
+                        }else{
+                            int input;
+                            if((input = open(words[i+1].c_str(), O_RDONLY)) < 0)
+                            {
+                                cerr << "No such file: " << words[i+1] << endl;
+                                exit(1);
+                            }
+                            dup2(input, 0);
+                            close(input);
+                        }
+                    }
+                    //set the space for the "<" argument to null
+                    argv[i] = NULL;
+                }
+            }
+            //end argv with null so that it is execv friendly
+            argv[i++] = NULL;
+            //execute
+            if(execv(program, (char**)argv) == -1)
+                perror("execv failed");
+            exit(1);
+
+        default:
+             return waitpid(pid, &status, 0);
+    }
+}
+
+
+
+
+
 int execCmd(char **args, int pipes)
 {
     // The number of commands to run
     const int commands = pipes + 1;
-    int i = 0;
-
     int pipefds[2*pipes];
 
-    for(i = 0; i < pipes; i++){
+    //open nessacry ammount of pipes
+    for(int i = 0; i < pipes; i++){
         if(pipe(pipefds + i*2) < 0) {
             perror("Couldn't Pipe");
             exit(EXIT_FAILURE);
@@ -75,14 +165,11 @@ int execCmd(char **args, int pipes)
 
     int pid;
 
-    int j = 0;
     int k = 0;
     int s = 1;
     int inS = 1;
     int place;
     int commandStarts[10];
-    int inR[10];
-    int outR[10];
     commandStarts[0] = 0;
     inR[0] = 0;
 
@@ -103,7 +190,7 @@ int execCmd(char **args, int pipes)
 
 
 
-    for (i = 0; i < commands; ++i) {
+    for (int i = 0, j=0; i < commands; i++, j+=2) {
         // place is where in args the program should
         // start running when it gets to the execution
         // command
@@ -134,24 +221,21 @@ int execCmd(char **args, int pipes)
 
             // The commands are executed here, 
             // but it must be doing it a bit wrong          
-            if( execvp(args[place], args + place) < 0 ){
-                    perror(*args);
-                    exit(EXIT_FAILURE);
+	    string a = args;
+            execute(a)
             }
         }
         else if(pid < 0){
             perror("error");
             exit(EXIT_FAILURE);
         }
-
-        j+=2;
     }
 
-    for(i = 0; i < 2 * pipes; i++){
+    for(int i = 0; i < 2 * pipes; i++){
         close(pipefds[i]);
     }
 
-    for(i = 0; i < pipes + 1; i++){
+    for(int i = 0; i < pipes + 1; i++){
         wait(NULL);
     }
 } 

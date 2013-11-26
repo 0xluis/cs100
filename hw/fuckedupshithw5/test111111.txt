@@ -1,0 +1,192 @@
+/*
+* COURSE: CS 100 FALL 2013
+*
+* FIRST NAME: LUIS
+* LAST NAME: GARCIA
+* USERNAME: LGARC018
+* EMAIL ADDRESS: LGARC018@UCR.EDU
+*
+*
+* ASSIGNMENT: HW4
+*
+* I HEREBY CERTIFY THAT THE CONTENTS OF THIS FILE REPRESENT
+* MY OWN ORIGINAL INDIVIDUAL WORK. NOWHERE HEREIN IS THERE
+* CODE FROM ANY OUTSIDE RESOURCES SUCH AS ANOTHER INDIVIDUAL,
+* A WEBSITE, OR PUBLISHINGS UNLESS SPECIFICALLY DESIGNATED AS
+* PERMISSIBLE BY THE INSTRUCTOR OR TA.
+*/
+#INCLUDE <IOSTREAM>
+#INCLUDE <VECTOR>
+#INCLUDE <SYS/TYPES.H>
+#INCLUDE <SYS/WAIT.H>
+#INCLUDE <FCNTL.H>
+#INCLUDE <SYS/STAT.H>
+#INCLUDE <SIGNAL.H>
+#INCLUDE <UNISTD.H>
+#INCLUDE <STDLIB.H>
+#INCLUDE <STDIO.H>
+#INCLUDE <IOSTREAM>
+#INCLUDE <CSTRING>
+
+USING NAMESPACE STD;
+
+INT INPUT(CHAR ** ARGV)
+{
+    INT ARGC = 0;
+    STRING ARG, TOPUSH;
+     CHAR *CSTR;
+
+  // READ IN ARGUMENTS TILL THE USER HITS ENTER
+  WHILE (CIN >> ARG) {
+
+    // CONVERT THAT STD::STRING INTO A C STRING.
+    CSTR = NEW CHAR[ARG.SIZE()+1];
+    STRCPY(CSTR, ARG.C_STR());
+    ARGV[ARGC] = CSTR;
+
+    // INCREMENT OUR COUNTER OF WHERE WE'RE AT IN THE ARRAY OF ARGUMENTS.
+    ARGC++;
+
+    // IF THE USER HIT ENTER, STOP READING INPUT.
+    IF (CIN.GET() == '\N')
+      BREAK;
+  }
+
+  // HAVE TO HAVE THE LAST ARGUMENT BE NULL SO THAT EXECVP WORKS.
+  ARGV[ARGC] = NULL;
+ 
+  // RETURN THE NUMBER OF ARGUMENTS WE GOT.
+  RETURN ARGC;
+}
+
+INT EXECCMD(CHAR **ARGS, INT PIPES)
+{
+    // THE NUMBER OF COMMANDS TO RUN
+    CONST INT COMMANDS = PIPES + 1;
+    INT PIPEFDS[2*PIPES];
+
+    //OPEN NESSACRY AMMOUNT OF PIPES
+    FOR(INT I = 0; I < PIPES; I++){
+        IF(PIPE(PIPEFDS + I*2) < 0) {
+            PERROR("COULDN'T PIPE");
+            EXIT(EXIT_FAILURE);
+        }
+    }
+
+    INT PID;
+
+    INT J = 0;
+    INT K = 0;
+    INT S = 1;
+    INT INS = 1;
+    INT PLACE;
+    INT COMMANDSTARTS[10];
+    INT INR[10];
+    INT OUTR[10];
+    COMMANDSTARTS[0] = 0;
+    INR[0] = 0;
+
+    // THIS LOOP SETS ALL OF THE PIPES TO NULL
+    
+// AND CREATES AN ARRAY OF WHERE THE NEXT
+    // COMMAND STARTS
+
+    WHILE (ARGS[K] != NULL){
+        IF(!STRCMP(ARGS[K], "|")){
+            ARGS[K] = NULL;
+            // PRINTF("ARGS[%D] IS NOW NULL", K);
+            COMMANDSTARTS[S] = K+1;
+            S++;
+        }
+        K++;
+    }
+
+
+
+    FOR (INT I = 0, J=0; I < COMMANDS; I++, J+=2) {
+        // PLACE IS WHERE IN ARGS THE PROGRAM SHOULD
+        // START RUNNING WHEN IT GETS TO THE EXECUTION
+        // COMMAND
+        PLACE = COMMANDSTARTS[I];
+
+        PID = FORK();
+        IF(PID == 0) {
+            //IF NOT LAST COMMAND
+            IF(I < PIPES){
+                IF(DUP2(PIPEFDS[J + 1], 1) < 0){
+                    PERROR("DUP2");
+                    EXIT(EXIT_FAILURE);
+                }
+            }
+
+            //IF NOT FIRST COMMAND&& J!= 2*PIPES
+            IF(J != 0 ){
+                IF(DUP2(PIPEFDS[J-2], 0) < 0){
+                    PERROR("DUP2");
+                    EXIT(EXIT_FAILURE);
+                }
+            }
+
+            INT Q;
+            FOR(Q = 0; Q < 2*PIPES; Q++){
+                    CLOSE(PIPEFDS[Q]);
+            }
+
+            // THE COMMANDS ARE EXECUTED HERE, 
+            // BUT IT MUST BE DOING IT A BIT WRONG          
+            IF( EXECVP(ARGS[PLACE], ARGS + PLACE) < 0 ){
+                    PERROR(*ARGS);
+                    EXIT(EXIT_FAILURE);
+            }
+        }
+        ELSE IF(PID < 0){
+            PERROR("ERROR");
+            EXIT(EXIT_FAILURE);
+        }
+    }
+
+    FOR(INT I = 0; I < 2 * PIPES; I++){
+        CLOSE(PIPEFDS[I]);
+    }
+
+    FOR(INT I = 0; I < PIPES + 1; I++){
+        WAIT(NULL);
+    }
+} 
+
+VOID PARSEEXEC (INT ARGC, CHAR** ARGV)//, CHAR** LEFT, CHAR** RIGHT)
+{
+    INT PIPE=0;
+    FOR(INT I=0; I<ARGC; I++)
+    {
+	IF(STRING(ARGV[I]) == "|")
+	{
+	    PIPE++;
+	}
+    }
+    EXECCMD(ARGV, PIPE);
+
+}
+
+INT MAIN()
+{
+    //THE INPUT FROM USER
+    CHAR*ARGV [999];
+    //IF WE NEED TO PIPE THESE WILL SERVE AS THE LEFT AND RIGHT SIDE OF THE PIPE
+//    CHAR*LEFT [999];
+//    CHAR*RIGHT [999];
+    INT ARGC = 0;
+    WHILE(TRUE)
+    {
+	COUT << "% ";
+        ARGC = INPUT(ARGV);
+	PARSEEXEC(ARGC, ARGV);
+        
+        //CLEAR ARRAY
+	FOR(INT I=0; I<ARGC; I++)
+	{
+	    ARGV[I] = NULL;
+	}
+    }
+
+}

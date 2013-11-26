@@ -1,0 +1,42 @@
+#!/bin/bash
+FILES=$PATH
+index=0
+#break up the path into an array
+for ((i=0;i<${#FILES}; i++)); do
+    if [ "${FILES:$i:1}" == ":" ]
+    then
+	path[index]=${FILES:0:$i}
+	((index++))
+	FILES=${FILES:$i+1}
+	i=0;
+    fi
+done
+#check inputs with paths
+#bool for lazyness
+found=false
+for i in "$@"; do
+    for ((k=0; k<${#path[@]}; k++)); do
+	if [ "${path[k]: -1}" != "/" ]
+	then
+	    if [ -f "${path[k]}""/""$i" ]
+	    then
+		echo "${path[k]}""/""$i"
+		found=true
+		break
+	    fi
+	else
+	    if [ -f "${path[k]}""$i" ]
+	    then
+		echo "${path[k]}""$i"
+		found=true
+		break
+	    fi
+	fi
+    done
+    if $found
+    then
+	found=false
+    else
+	echo "$i" does not exist under PATH
+    fi
+done

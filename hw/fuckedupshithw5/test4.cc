@@ -34,7 +34,7 @@ using namespace std;
 string get_path(string);
 vector<string> strToVect(string);
 int execute(string);
-int pipeExecute(list<string>);
+void pipeExecute(list<string>);
 list<string> splitPipes(string);
 void parsePipes(list<string>);
 string findFilePath(vector<string>, string);
@@ -78,7 +78,10 @@ vector<string> strToVect(string input)
 
 //executes the command by forking and calling execv
 //argument is the line enterd by user eg: ls ../
-int execute(string input)
+int execute(list<string> listCommands)
+{
+
+for(int i=0; i<listCommands.size(); i++)
 {
     //convert the string into vector of strings
     vector<string> words = strToVect(input);
@@ -149,10 +152,52 @@ int execute(string input)
 	     return waitpid(pid, &status, 0);
     }
 }
+}
 
-int pipeExecute(list<string> listCommands)
+void pipeExecute(list<string> listCommands)
 {
-    
+    int commands =  listCommands.size();
+    int pipes = commands-1;
+    int pipefds[2*pipes];
+   
+    for(int i=0; i<pipes; i++)
+    {
+   	if(pipe(pipefds + i*2) <0)
+	{
+	    perror("pipe");
+	    exit(1);
+	}
+    }
+
+   for(int i=0, j=0; i<commands; i++, j+=2)
+   {
+	
+	execut(listCommands.front());
+	listCommands.pop_front();
+
+	if(i<pipes)
+	{
+	    if(dup2(pipefds[j+1], 1)<0)
+	    {
+	 	perror("dup2");
+		exit(1);
+	    }
+	}
+	if(j!=0)
+	{
+	    if(dup2(pipefds[j-2],0)<0)
+	    {
+		perror("dup2");
+		exit(1);
+	    }
+	}
+	for(int q=0; q<2*pipes; q++)
+	close(pipefds[q]);
+
+   }
+
+   for(int i=0; i<2*pipes; i++)
+	close(pipefds[i]);
 }
 
 //split the commands by | into list
@@ -187,15 +232,15 @@ void parsePipes(list<string> listCommands)
     if(listCommands.front() != "")
     {
 	//no pipes
-        if(listCommands.size() == 1)
-        {
-	    execute(listCommands.front());
-        }
+        //if(listCommands.size() == 1)
+       // {
+	    execute(listCommands);
+        //}
         //we have pipes
-        else
-        {
-	    pipeExecute(listCommands);
-        }
+       // else
+       // {
+	 //   pipeExecute(listCommands);
+        //}
     }
 }
 
